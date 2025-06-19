@@ -6,6 +6,7 @@ import { supabase } from '../config/supabase';
 import { useNavigation } from '@react-navigation/native';
 import { loadCartFromSupabase } from '../store/cartSlice';
 import { useAppDispatch } from '../hooks/useAppDispatch';
+import { Session } from '@supabase/supabase-js';
 
 type FormData = {
   email: string;
@@ -15,8 +16,19 @@ type FormData = {
 const AuthScreen = () => {
   const { control, handleSubmit, reset } = useForm<FormData>();
   const [isLogin, setIsLogin] = useState(true);
+  const [session, setSession] = useState<Session | null>(null)
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
 
   const onSubmit = async (data: FormData) => {
     const { email, password } = data;
@@ -26,8 +38,10 @@ const AuthScreen = () => {
       if (error) {
         Alert.alert('Ошибка входа', error.message);
       } else {
-        dispatch(loadCartFromSupabase());
         navigation.reset({ index: 0, routes: [{ name: 'Home' as never }] });
+        setTimeout(() => {
+          dispatch(loadCartFromSupabase());
+        }, 4000);
       }
     } else {
       const { error } = await supabase.auth.signUp({ email, password });

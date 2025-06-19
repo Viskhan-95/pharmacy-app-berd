@@ -2,27 +2,14 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Product } from '../types/Product';
 import { Ionicons } from '@expo/vector-icons';
-import { addToCart } from '../store/cartSlice';
-import { useAppDispatch } from '../hooks/useAppDispatch';
+import { useCart } from '../hooks/useCart';
 
 type Props = {
   product: Product;
 };
 
 const ProductCard = ({ product }: Props) => {
-  const dispatch = useAppDispatch();
-
-  const handleAddToCart = () => {
-    dispatch(
-      addToCart({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.image,
-        quantity: 1
-      })
-    );
-  };
+  const { add } = useCart();
 
   return (
     <View style={styles.card}>
@@ -33,7 +20,7 @@ const ProductCard = ({ product }: Props) => {
         <Text style={styles.description}>{product.description}</Text>
         <View style={styles.footer}>
           <Text style={styles.price}>{product.price} ₽</Text>
-          <TouchableOpacity style={styles.button} onPress={handleAddToCart}>
+          <TouchableOpacity style={styles.button} onPress={() => add(product)}>
             <Ionicons name="cart" size={20} color="#fff" />
           </TouchableOpacity>
         </View>

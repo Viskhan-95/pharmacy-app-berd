@@ -1,14 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { supabase } from '../config/supabase';
 import { RootState } from './index';
-
-export type CartItem = {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  image: string;
-};
+import { CartItem } from '../types/CartItem';
 
 type CartState = {
   items: CartItem[];
